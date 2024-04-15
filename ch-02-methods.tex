@@ -1,0 +1,101 @@
+\chapter{Methodology}
+This study makes use of the Jetstream optimization framework, which comprises methods for geometry parameterization and control, mesh deformation, flow evaluation, gradient evaluation, and optimization. A brief overview of these methods is described in the following sections, but detailed descriptions of each method are out of the scope of this study. Further details on the optimization framework can be found in Streuber and Zingg~\cite{streuber_evaluating_2021} and Koo and Zingg~\cite{koo_investigation_2018}. A description of the problem formulation follows, which discusses the baseline geometry and formulates the optimization problem.
+~\section{Aerodynamic Shape Optimization Scheme}
+Jetstream flow solutions are computed using Diablo, which is a three-dimensional, parallel, implicit, multiblock structured finite-difference CFD solver with the ability to solve both the Euler~\cite{hicken_parallel_2008} and RANS~\cite{osusky_parallel_2013} equations. The solution of the RANS equations makes use of the Spalart-Allmaras one-equation turbulence model. Gradients of the aerodynamic functionals are computed through an implementation~\cite{hicken_efficient_2009,osusky_drag_2015} of Jameson's discrete adjoint method~\cite{jameson_aerodynamic_1988}. The computed gradients are obtained as a total derivative, which are passed to SNOpt~\cite{gill_snopt_2005}. SNOpt makes use of sequential-quadratic-programming and Hessians obtained via a BFGS algorithm to calculate the next iteration of the design variables with respect to the constraints so as to continue minimizing the given objective function. To reduce the use of computational resources, this study considers an optimization as converged when the merit function is qualitatively observed to be unchanged for at least 50 iterations.
+
+Mesh deformation is required due to the modifications to the design variables that occurs during optimization. This is accomplished through a linear elasticity method~\cite{hicken_aerodynamic_2010,truong_mesh_2008}, the efficiency of which is improved by fitting a coarse B-spline control mesh over the computational mesh, with deformations applied to the control mesh. The deformations on the control mesh are then used to deform the computational mesh.
+~\section{Geometry Parameterization and Control}
+The parameterization of a geometry in Jetstream is accomplished through B-spline patches, which are used to define the surface. Control of the surface is achieved through axial and free-form deformation (FFD) schemes~\cite{gagnon_two-level_2015}. These control schemes are implemented by fitting the B-spline patches with fourth-order B-splines, which contain a user-specified number of control points per edge. The B-spline surface control points are enclosed within B-spline volumes, referred to as FFD volumes. Deformation of the FFD volumes is achieved through manipulation of the FFD control points, which are located along cross-sections of the wing. These control points enable local twist and taper changes, as well as control over local section shape variables such as thickness, section shape height, chord, and more.
+
+Control over planform design variables inducing large mesh deformations such as sweep, span, and dihedral, is accomplished through B-spline curves running across the span of the wing—referred to as axial curves. These axial curves contain their own control points at which local changes to sweep, span, and dihedral may be enacted. Changes to sweep, span, and dihedral correspond to axial curve control point translations in the chordwise, spanwise, and vertical directions.
+~\section{Problem Formulation}
+~\label{ssec-prob-formulate}
+This study is intended to answer one question above all: when including sweep as a design variable in a purely aerodynamic shape optimization problem, how large will the wing sweep angle be when it stops growing, if it all?
+In consideration of the motivations in section~\ref{ssec:motivation}, this study aims to be a less constrained expansion upon ADODG Case 4, which is a benchmark case for the single-point constrained wing section optimization of the NASA CRM in viscous flow~\cite{koo_investigation_2018, martins_aerodynamic_2022}. ADODG Case 4 is limited to optimizing twist and section shape variables subject to lift, pitching moment, area, volume, and thickness constraints. Meanwhile, this study will conduct an optimization under slightly relaxed conditions and with additional geometries, which will be discussed in sections~\ref{ssec:base-geo} and~\ref{ssec:opt-prob-formulate}.
+~\subsection{Baseline Geometry}
+~\label{ssec:base-geo}
+Two geometries will be used in this study. The first is the NASA CRM wing, which is obtained by extracting the wing from the NASA CRM wing-body geometry. The wing geometry, reference area, and reference point are nondimensionalized by the mean aerodynamic chord (MAC) of 275.8 inches. The wing is optimized at a single operating point with a Mach number of 0.85 and a Reynolds number of $30\times10^6$. The lift constraint of $C_L=0.50$ is reused from ADODG Case 4, but since the area and volume are not constrained, the lift constraint is represented as a product of the lift coefficient and the wing's projected area, resulting in $C_L S=1.6972$ for an initial reference area of $S_{\text{ref}}=3.407$ squared reference units. The CRM wing has 15 chordwise B-spline surface design sections along the wingspan, at which section shape variables and twist maybe be modified. Two spanwise axial curves are present on the wing. Both axial curves are located at the leading edge of the wing, and are connected at the section corresponding to the trailing edge crank of the wing. The axial curve at the inboard section of the wing has two control points, whereas the outboard axial curve has four control points. B-spline surface and axial curve control points are shared at the entire section where the inboard and outboard axial curve meet.
+
+The second geometry to be used in this study is a wing planform based on the Airbus A320neo. The RAE2822 airfoil is used to create the initial wing section shape. This planform is used due to its use in a production aircraft and its smaller scale compared to the NASA CRM. The A320neo's optimization will serve to illustrate the differences in sweep optimization behaviour between wings of short and long-haul aircraft, and to compare this study's optimum with the initial planform, which was subject to numerous multidisciplinary trade-offs in its design. Like the CRM, the wing geometry, reference area, and reference point are nondimensionalized by the MAC of 172.8 inches. The wing is optimized at a single operating point as well, with a Mach number of 0.78 and a Reynolds number of $27\times10^6$. The lift constraint is also $C_L=0.50$, which due to the lack of area constraint results in $C_L S=1.6686$ for an initial reference area of $S_{\text{ref}}=3.3397$ squared reference units. Unlike the NASA CRM case, a minimum volume constraint is imposed for the A320neo case. The volume must be greater than or equal to its original volume, $V=0.2684$ cubed reference units. The A320neo wing has 9 chordwise B-spline surface design sections along the wingspan, at which section shape variables and twist may be modified. Two spanwise axial curves are present on the wing. Both axial curves are located at the leading edge of the wing, and are connected at the section corresponding to the trailing edge crank of the wing. Both the inboard and outboard axial curves have two control points each. B-spline surface and axial curve control points are shared at the entire section where the inboard and outboard axial curves meet.
+
+Table~\ref{tab:grid-params} shows the information for the CRM and A320neo grids used. The CRM grid is refined at runtime within Jetstream to twice the number of nodes with the same number of blocks to make the mesh resolution more comparable between the two cases. An effort was made to refine the CRM grid to thrice the number of nodes, but this was not successful due to computational memory constraints.
+
+\begin{table}[!tp]
+\centering
+\caption{Grid parameters for NASA CRM and A320neo ASO study}
+\label{tab:grid-params}
+\begin{tabular}{lrccc}
+\hline\hline
+Grid & \multicolumn{1}{c}{Nodes} & \multicolumn{1}{c}{Blocks} & \multicolumn{1}{c}{Off-wall spacing (ref. units)} & \multicolumn{1}{c}{Average $y^+$} \\ \hline
+NASA CRM & 3,910,592 & 128 & $3.3\times10^{-7}$ & 0.98 \\
+A320neo & 12,793,968 & 1008 & $3.3\times10^{-7}$ & 0.54 \\ \hline\hline
+\end{tabular}
+\end{table}
+~\subsection{Optimization Problem Formulation}
+~\label{ssec:opt-prob-formulate}
+\vspace{-1.25cm}
+~\subsubsection{Sweep-Varying Aerodynamic Shape Optimization Study}
+~\label{sssec:aso-sweep-opt-methods}
+As stated previously, the optimization problems under study will be slightly relaxed versions of ADODG case 4. The design variables for the CRM and A320neo wing are identical. The optimization problem for the NASA CRM case is given in Equation~\ref{eqn:crm-opt},
+\begin{equation}
+~\label{eqn:crm-opt}
+    \begin{split}
+        {\text{min}}\quad C_D S\\
+        \text{w.r.t}\quad \mathbf{X}\\
+        \text{subject to}\quad C_LS=1.6972\\
+    \end{split}
+\end{equation}
+where $\mathbf{X}$ represents the vector of design variables. The design variables consist of the angle of attack, twist, section shape, and wing sweep. Note that chord, span, and dihedral are not design variables and must remain fixed. Compared to ADODG case 4, the only additional design variable is the wing sweep. The design variable inequality constraints and other non-design variable inequality constraints on the geometry such as thickness are given in Table~\ref{tab:crm-opt}.
+\begin{table}[!tp]
+\centering
+\caption{Design variable and non-design variable inequality constraints for NASA CRM ASO study}
+\label{tab:crm-opt}
+\begin{tabular}{lrccc}
+\hline\hline
+Constraint & \multicolumn{1}{c}{Lower Limit} & \multicolumn{1}{c}{Upper Limit} \\ \hline
+\multicolumn{3}{c}{Design Variable Inequality Constraints} \\ \hline
+Angle of Attack & -4.0\degree & 4.0\degree \\
+Local Twist & -15.0\degree & 15.0\degree \\
+Section Shape (\% of Original) & 5.0\% & 2000.0\% \\
+Leading Edge Sweep Angle & 37.5\degree & 45.9\degree \\ \hline
+\multicolumn{3}{c}{Non-Design Variable Inequality Constraints} \\ \hline
+Thickness (\% of Original) & 75.0\% & 200.0\% \\ \hline\hline
+\end{tabular}
+\end{table}
+
+The A320neo optimization problem is identical to the CRM case, with the exception of a minimum volume constraint and different limits for the wing sweep angle. Furthermore, the twist at the root is fixed as well. This optimization problem can be stated as in Equation~\ref{eqn:a320neo-opt},
+\begin{equation}
+~\label{eqn:a320neo-opt}
+    \begin{split}
+        {\text{min}}\quad C_D S\\
+        \text{w.r.t}\quad \mathbf{X}\\
+        \text{subject to}\quad C_LS=1.6686 \\
+        V \geq V_{\text{initial}} = 0.2684 \\
+    \end{split}
+\end{equation}
+where $\mathbf{X}$ represents the vector of design variables as in the NASA CRM case. The design variables consist of the angle of attack, twist, section shape, and wing sweep. Note that chord, span, and dihedral are not design variables and must remain fixed. The design variable constraints and other constraints on the geometry are given in Table~\ref{tab:a320neo-opt}.
+\begin{table}[!tp]
+\centering
+\caption{Design variable and non-design variable inequality constraints for A320neo ASO study}
+\label{tab:a320neo-opt}
+\begin{tabular}{lrccc}
+\hline\hline
+Constraint & \multicolumn{1}{c}{Lower Limit} & \multicolumn{1}{c}{Upper Limit} \\ \hline
+\multicolumn{3}{c}{Design Variable Inequality Constraints} \\ \hline
+Angle of Attack & -4.0\degree & 4.0\degree \\
+Local Twist & -15.0\degree & 15.0\degree \\
+Section Shape (\% of Original) & 5.0\% & 2000.0\% \\
+Leading Edge Sweep Angle & 27.9\degree & 37.7\degree \\ \hline
+\multicolumn{3}{c}{Non-Design Variable Inequality Constraints} \\ \hline
+Thickness (\% of Original) & 75.0\% & 200.0\% \\ \hline\hline
+\end{tabular}
+\end{table}
+It must be noted that the sweep angle limit in Jetstream is specified as a multiple of the initial MAC, which acts as the reference unit. In the initial cases corresponding to equations~\ref{eqn:crm-opt} and~\ref{eqn:a320neo-opt}, the upper sweep limit for both planforms was inputted as 1.000 reference units. When a specific sweep angle limit is desired it must be converted from degrees to units of MAC. This results in some discrepancy between the desired limit and the actual limit, as the finite precision of the truncated sweep limit may result in a difference of a few tenths of a degree.
+
+A discussion of the choice of sweep angle bound is also warranted here. Although Streuber and Zingg ~\cite{streuber_efficiency_2022} found that not all optima with sweep as a design variable converged to backward-sweep, a planform that is initially back-swept as with the CRM and A320neo is not expected to become forward-swept. This is because aerodynamic theory at transonic conditions dictates that the region surrounding a zero-degree sweep is approximately a maxima with respect to the wave drag, which is the main source of drag to be minimized through increased wing sweep. This motivated a lower limit equal to the original wing sweep angle for each aircraft.
+
+The upper sweep angle limit was more difficult to select. Studies that include sweep as a design variable either do not mention its constraint limits in the optimization problem~\cite{streuber_investigation_2017,streuber_evaluating_2021}, or use sweep limits that are not far off from the sweep angle of the initial wing planform~\cite{koo_investigation_2018}. Hence, the CRM upper sweep angle limit was selected to be 7.5\degree\ greater than the sweep limit, which is approximately the upper limit on the wing sweep angle observed in commercial transonic aircraft. In contrast, the A320neo's sweep angle upper limit was selected to be approximately 10.0\degree\ above the initial planform's sweep angle. This is a moderate increase over the initial sweep angle and was chosen so as to observe if the case would settle into optima in this region, or if an optimum at a higher sweep angle would dominate and push the sweep angle to its upper limit during the initial ASO case. If either the CRM or A320neo optimization case was to produce an optimum with an active sweep angle constraint, the case could be restarted with an expanded sweep angle constraint and with the previous optimum used as the initial geometry, to shorten computation time.
+
+\subsubsection{Drag Behaviour by Sweep Angle}
+~\label{sssec:drag-opt-methods}
+The study of the aircraft drag as a function of the wing sweep angle is conducted only on the NASA CRM wing, owing to the time and computational cost of running ASO at high resolution with many design variables. The design variables and wing sweep angles for this study are chosen \textit{a posteriori}, as informed by the results of the study outlined in section~\ref{sssec:aso-sweep-opt-methods}. The design variables consist of the angle of attack and section shape. The wing sweep angle is not a design variable, and is instead studied at discrete values of 37.5\degree, 40.0\degree, and 42.5\degree, where 37.5\degree\ is the original sweep angle of the NASA CRM wing. Wing twist is also not a design variable as a result of the complex wingtip geometry that results from its inclusion. These defects are reported in section~\ref{ssec:crm-opt-twist}.

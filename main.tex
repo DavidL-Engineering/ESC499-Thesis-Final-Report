@@ -1,0 +1,98 @@
+%\documentclass[12pt, letterpaper]{article}
+\documentclass[12pt, onehalfspacing, narrowmargins]{ut-thesis}
+\let\olddegree\degree  % Store \degree in \olddegree
+\let\degree\relax      % Remove definition of \degree
+\usepackage[utf8]{inputenc}
+% \usepackage[colorlinks]{hyperref} % for links
+\usepackage{hyperref} % for links
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+% \usepackage[backend=biber]{biblatex} % for references
+\usepackage{graphicx} % for embedding graphics
+\usepackage{booktabs} % for pretty tables
+\usepackage{lipsum} % for gibberish text
+
+% Recommended packages from Suraj
+\usepackage{geometry}
+\usepackage[T1]{fontenc}
+% \usepackage{lipsum}
+\usepackage{ar}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+% \usepackage[varg]{txfonts}
+% \usepackage{lettrine} % works great with times
+% \usepackage{type1cm} % needed for scalability of some fonts such as CMR
+% \usepackage[toc,page]{appendix}
+\usepackage{color}
+\usepackage{epsfig}
+% \usepackage{eso-pic}
+\usepackage{float}
+% \usepackage{graphicx}
+\usepackage{hhline}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage{pdflscape}
+\usepackage{pdfpages}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{supertabular}
+\usepackage{tabularx}
+\usepackage{type1cm}
+\usepackage{units}
+% \usepackage{verbatim}		
+\usepackage{breqn}
+\usepackage{cite}
+\usepackage{url}
+% \usepackage{indentfirst}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{epstopdf}
+\usepackage{subfig} 
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{nomencl}
+\captionsetup[figure]{font=small}
+\makenomenclature
+% \usepackage{setspace}
+\usepackage{gensymb}
+\let\degreesymb\degree % Store new \degree in \degreesymb
+\let\degree\olddegree  % Restore \degree to its old definition \olddegree
+\usepackage[indent=1.5em]{parskip} % Increase spacing between paragraphs (double line skip)
+\usepackage{adjustbox} % Allow tables to span the whole page (see tables of results summaries)
+\usepackage{flafter} % Make figures appear after they are first referenced
+\usepackage{placeins} % Make figures appear in order using \FloatBarrier
+\usepackage{makecell} % Use makecell to make multiline cells in tables
+
+% author data
+\author{David Leong}
+\title{Characterization of Wing Sweep in the Aerodynamic Shape Optimization of Transport Aircraft}
+\degree{Bachelor of Applied Science in Engineering Science}
+\department[Division of]{Engineering Science}
+\gradyear{2023}
+% reference database
+
+\begin{document}
+  \frontmatter
+    \input title.tex
+    \input{pre-01-abstract}
+    \input{pre-02-acknowledgements}
+    \tableofcontents
+    \listoffigures
+    \listoftables
+  \mainmatter
+    \input{ch-01-intro}
+    \input{ch-02-methods}
+    \input{ch-03-results}
+    \input{ch-04-discussion}
+    \input{ch-05-conclusion}
+  \appendix
+    % \input{ap-code}
+  \backmatter
+  \bibliography{thesis_final_report_refs_combined.bib}
+  \bibliographystyle{aiaa}
+\end{document}

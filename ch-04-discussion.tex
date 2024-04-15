@@ -1,0 +1,64 @@
+\chapter{Discussion}
+\section{Multidisciplinary Considerations}
+The original intention of this study was to answer a single question: when sweep is included as a design variable in pure ASO, at what point will the wing sweep angle stop growing, if at all? This was answered through both the CRM and A320neo optimizations, where the former's wing sweep angle reaches an optimum at 48.50\degree\ without wing twist, and the latter's reaches an optimum at 46.70\degree. The drag benefits over the trimmed baseline cases for both wings are substantial, up to 9.936\% for the CRM wing and 18.824\% for the A320neo. Yet, these results are actually quite nuanced. While an improvement over the baseline is quite productive towards improvements in efficiency and aircraft sustainability, a secondary question is one of whether increasing the sweep angle is actually necessary to yield such performance improvements. Optimizations at the original sweep angles of the CRM and A320neo wings were conducted and compared to the results at the optimal sweep angles, illustrating that the real performance benefits of adding sweep are much smaller than how they initially appear. For the CRM, this benefit was only 1.141\% over the original sweep angle while for the A320neo it was slightly greater, at 2.827\%. This indicates that the design space appears to be quite flat with respect to an aircraft's sweep angle, and that the benefits may be less significant compared to the magnitude of numerical error as one approaches the optimal sweep angle.
+
+The NASA CRM and A320neo comparison to the optimizations at their original sweep angles further emphasizes the question of whether substantial changes to sweep are truly worthwhile. Indeed, increasing the sweep angle of an aircraft is actually quite a substantial change with cascading effects. It produces differences in the centre of gravity and lift of the aircraft, changing its moment and consequently, its stability characteristics. Without a change to the position of the wing along the length of the fuselage, this would require a change in the trimmed configuration of the aircraft with respect to the elevons and their trim tabs. The increased trim force required to counteract an increased moment may partially or even completely negate the benefits obtained by increasing the sweep, especially when the benefits are compared to an optimization at the original sweep angle, relative to which the drag benefits of increasing sweep are much lower. Operational design factors would be impacted as well. Constraints on certain wing design parameters are influenced by airport gate and service equipment requirements, such that an aircraft with a substantially increased sweep may not be able to park at a gate or serviced by airport vehicles due the risk of collision when the wings are at a greater sweep angle.
+
+ The impact on the structural design of the wing is considerably affected by changes in the sweep angle as well. An increased sweep angle on an aircraft increases the bending moment and torsional loads along the wing and at its joint with the fuselage. Therefore, an increase an aircraft's wing sweep comes with a structural weight penalty in order for the design to be structurally feasible. Moreover, an increase in weight cascades back to aerodynamic performance, as the induced drag on an aircraft is proportional to the weight of the aircraft squared, which is derived from the lift and induced drag coefficients of an aircraft. Furthermore, it is known that the induced drag on an aircraft is approximately half of the total drag. Therefore, for a given change in sweep to be beneficial, the wing's drag must be reduced by a greater percentage than the increase in the wing weight.
+\begin{equation}
+~\label{eqn:lift_coef}
+    C_L = \frac{L}{\frac{1}{2}\rho_0 V_{E}^2 S}
+\end{equation}
+\begin{equation}
+~\label{eqn:induced_drag}
+    \begin{split}
+        C_{D,i} = \frac{C_{L}^2}{\pi\frac{b^2}{S}e}
+    \end{split}
+\end{equation}\par
+An estimate of the wing weight as a result of changes in the wing sweep angle may be calculated using Equation~\ref{eqn:wing_weight},
+\begin{equation}
+~\label{eqn:wing_weight}
+W_{wing}=W_G k_w b_{s}^{0.75} \left[1+\sqrt{\frac{b_{\text{ref}}}{b_s}}\right] n_{\text{ult}}^{0.55} \left[\frac{b_s/t_r}{W_G /S}\right]
+\end{equation}
+which is a modified version of that presented by Kuntawala~\cite{kuntawala_aerodynamic_2011}. In this equation, $W_G \text{lb} = MZFW = \text{gross weight}$; $k_w = 1.7\times10^-3$; $b_s=b/\cos{\Lambda}=\text{structural span}$ where $b = \text{wing span (ft)}$, $\Lambda = \text{sweepback angle at the leading edge (deg)}$; $b_{\text{ref}}=6.25\text{ft}=\text{reference span}$; $n_{\text{ult}}=\text{ultimate load factor}$; $t_r=\ $(absolute) maximum thickness of root chord (ft); and $S=\text{(projected) area of the wing (ft^2)}$.
+
+The approximate total aircraft cruise weight is calculated for each aircraft and assumes that the total aircraft fuel weight $(W_F)$ is found by $W_F=MTOW-MZFW$, and that the fuel weight at cruise is 85\% of the total fuel weight. The total aircraft cruise weight is calculated as in Equation~\ref{eqn:cruise_weight}.
+\begin{equation}
+~\label{eqn:cruise_weight}
+    W_{\text{cruise}}=0.85\times W_F+MZFW
+\end{equation}\par
+The NASA CRM configuration is similar to the Boeing 777-200ER, such that its design weights may be used to approximate the CRM's cruise weight and gross weight. Kenway et al.~\cite{kenway_aerostructural_2014} summarize these design weights, resulting in $W_{\text{cruise}}=593,193\ \text{lb}$ and $W_G=429,990\ \text{lb}$ for the CRM in its original configuration. 
+
+Chau and Zingg~\cite{chau_aerodynamic_2023} present the A320neo's design weights, resulting in $W_{\text{cruise}}=169,452\ \text{lb}$ and $W_G=142,090\ \text{lb}$ for the A320neo in its original configuration. Chau and Zingg also present the A320neo's wing weight, allowing for a benchmark of Equation~\ref{eqn:wing_weight} using the A320neo's actual wing weight. Equation~\ref{eqn:wing_weight} produces a wing weight of $18,682\ \text{lb}$ for the A320neo in its original configuration, compared to the A320neo's real wing weight of $18,710\ \text{lb}$. This is a difference of 0.150\%, which is considered to be tolerable in this study.
+
+The wing weights by sweep angle, percent change in wing weight, percent change in total aircraft cruise weight, and percent change in total aircraft drag for the CRM results presented in section~\ref{sec:crm-drag-trends} are given in Table~\ref{tab:crm_weight_results}. It must be noted that the optimization at the original sweep angle was measured to have decreased in sweep angle by 0.2\degree. This is considered a numerical error for the sake of weight calculations, as it would otherwise decrease the weight of this wing. Hence, weight comparisons are made with respect to the original configuration studied in the "trimmed baseline" case.
+
+%%%%%%% TABLE OF WEIGHTS %%%%%%%
+\begin{table}[!tp]
+\centering
+\caption{Weight and drag trade-off results for the optimization of the NASA CRM without wing twist}
+\label{tab:crm_weight_results}
+\begin{adjustbox}{center}
+\begin{tabular}{lccccc}
+\hline\hline
+Variable & Trimmed Baseline & \makecell{Original (37.5\degree)\\Sweep Angle} & \makecell{40.0\degree\\Sweep Angle} & \makecell{42.5\degree\\Sweep Angle} & \makecell{60.0\degree\\Sweep Limit}\\
+\hline
+\makecell[l]{Post-Optimization\\Leading Edge\\Sweep Angle} & 37.50\degree & 37.31\degree & 39.90\degree & 42.40\degree & 48.50\degree \\[0.75cm]
+% \makecell[l]{Change in $C_D S$\\Relative to\\Trimmed Baseline} & 0.000\% & -8.897\% & -9.316\% & -9.663\% & -9.936\% \\[0.75cm]
+\makecell[l]{Change in $C_D S$\\Relative to\\Optimization at\\Original Sweep Angle} & 11.03\% & 0.000\% & -0.460\% & -0.841\% & -1.141\% \\[1cm]
+\makecell[l]{Wing Weight (lb)} & 72,709 & 72,598 & 75,204 & 78,072 & 86,801 \\[0.5cm]
+\makecell[l]{Change in\\Wing Weight} & 0.000\% & -0.152\% & 3.432\% & 7.376\% & 19.382\% \\[0.5cm]
+% \makecell[l]{Change in\\Total Aircraft Weight} & 0.000\% & -0.019\% & -0.421\% & -0.904\% & 2.376\% \\[0.5cm]
+\hline\hline
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+The results in Table~\ref{tab:crm_weight_results} illustrate that the improvements in wing drag are sub-linear while the increase in wing weight as a result of the change in sweep angle is super-linear. Of particular note is that even at a small increase in sweep angle of 2.5\degree, the reduction in wing drag compared to the optimized case at the original sweep angle is not able to offset the corresponding increase in wing weight. Furthermore, as the sweep angle increases, the wing weight penalty continues to grow—far exceeding the drag benefits at the the increased sweep angle. Therefore, any increase in sweep above the nominal sweep angle does not yield a benefit in aircraft performance when both wing weight and wing drag are accounted for.
+
+This information is of considerable importance when considering the greater context in which this study resides. In particular, it is the fact that aircraft design does not exist in isolation within a single discipline, but instead interacts with many others in a complicated manner. Notably, from a more holistic aircraft design perspective, the full impact of an optimized wing at a sweep angle beyond the nominal angle is seen to be a net detriment in aircraft performance due to the resultant weight penalty. In all, this finding makes two matters clear. First, that an optimal wing sweep angle exists for the CRM and A320neo configurations, and that there is an aerodynamic benefit of 1.1\% and 2.8\% respectively when compared to the same configuration when optimized at the original sweep angle. Second, that the aerodynamic benefit of any increase to the wing sweep angle—no matter how small—are not able to counteract the resulting increases in drag from multidisciplinary interactions.
+
+\section{Limitations}
+There are several limitations in this study. First, the optimization of the CRM and A320neo wings resulted in wingtip geometries that are unlikely to be manufacturable. With the minute changes in drag that appeared between optimizations at higher sweep angles, it is possible that a non-negligible proportion of these changes are a result of numerical error produced by the complex wingtip geometries. Moreover, convergence in each optimization case was determined qualitatively, such that further performance gains could be found. If each case was to be permitted to run so as to meet some objective convergence criteria, further drag benefits may result, along with slightly different behaviour in the drag trends than those observed in this study. 
+
+Lastly, performance changes in specific sources of drag were not characterized. The use of a tool to exactly determine the contribution of wave drag, lift-induced drag, and viscous drag to the total drag on the wing would enable analysis of how their contributions change as the sweep angle is increased or if the Mach number changes.
